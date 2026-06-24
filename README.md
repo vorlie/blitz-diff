@@ -6,22 +6,22 @@ A mod manager for **World of Tanks Blitz**, written in Rust with [egui](https://
 
 ## Features
 
-- **Dual client support** — Deploy to Steam, WGC, or both; leave a path blank to disable that client
-- **Mod library** — Scan a local folder for `.zip` mods, enable/disable, reorder load order
-- **Metadata** — Read `blitz-mod.json` from inside the zip or a sidecar file next to it
-- **Apply All Enabled** — Deploy enabled mods in load order with conflict warnings
-- **Revert** — Restore from local backups, opposite client, or remove mod-added files
-- **Integrity scan** — SHA-256 comparison of tracked files vs live game and optional zip check
-- **Profiles** — Save and apply named mod presets
-- **Auto-detect paths** — Find Steam/WGC installs via registry and library folders
-- **Backups browser** — Restore individual files from `blitz_diff_local_backups/`
-- **Drag-and-drop** — Drop `.zip` files onto the window to add to library
+- **Dual client support** - Deploy to Steam, WGC, or both; leave a path blank to disable that client
+- **Mod library** - Scan a local folder for `.zip` mods, enable/disable, reorder load order
+- **Metadata** - Read `blitz-mod.json` from inside the zip or a sidecar file next to it
+- **Apply All Enabled** - Deploy enabled mods in load order with conflict warnings
+- **Revert** - Restore from local backups, opposite client, or remove mod-added files
+- **Integrity scan** - SHA-256 comparison of tracked files vs live game and optional zip check
+- **Profiles** - Save and apply named mod presets
+- **Auto-detect paths** - Find Steam/WGC installs via registry and library folders
+- **Backups browser** - Restore individual files from `blitz_diff_local_backups/`
+- **Drag-and-drop** - Drop `.zip` files onto the window to add to library
 
 ---
 
 ## DAVA / Data Path Rules
 
-WoT Blitz uses the **DAVA Framework**. Assets are typically `.dvpl` blobs (e.g. `texture.pvr.dvpl`, `list.xml.dvpl`). Blitz Diff copies them **byte-for-byte** — no decompression or editing.
+WoT Blitz uses the **DAVA Framework**. Assets are typically `.dvpl` blobs (e.g. `texture.pvr.dvpl`, `list.xml.dvpl`). Blitz Diff copies them **byte-for-byte** - no decompression or editing.
 
 When extracting mods, paths are resolved relative to the **`Data/`** anchor inside each zip entry:
 
@@ -93,8 +93,8 @@ profiles.toml     # Saved mod presets
 
 1. Open **Settings** → configure Steam/WGC `Data/` paths (or use **Auto-detect**)
 2. Set a **Mods Library Folder** and add `.zip` files via **Library** tab or drag-and-drop
-3. Enable mods and set load order (▲/▼)
+3. Enable mods and set load order (Move Up/Move Down)
 4. Use **Apply All Enabled** on the Operations tab, or apply a single zip manually
 5. **Revert** restores tracked files; **Integrity Scan** checks for drift after game patches
 
-Close World of Tanks Blitz before deploying — the app warns if the game process is running.
+Close World of Tanks Blitz before deploying - the app warns if the game process is running.
