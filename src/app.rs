@@ -148,7 +148,7 @@ impl ModManagerApp {
                 ui.horizontal(|ui| {
                     ui.heading("📦 Blitz Diff");
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(egui::RichText::new("v0.2.0").weak().small());
+                        ui.label(egui::RichText::new("v0.2.1").weak().small());
                     });
                 });
             });
