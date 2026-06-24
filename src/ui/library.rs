@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::fs;
 use eframe::egui;
 use uuid::Uuid;
 
@@ -172,22 +173,35 @@ fn add_zip_dialog(app: &mut ModManagerApp) {
 }
 
 pub fn add_zip_path(app: &mut ModManagerApp, path: PathBuf) {
-    if app
-        .storage
-        .catalog
-        .mods
-        .iter()
-        .any(|m| m.zip_path == path)
-    {
+    let library_dir = PathBuf::from(&app.storage.config.mods_library_path);
+    let mut final_path = path.clone();
+
+    if !path.starts_with(&library_dir) {
+        let file_name = path.file_name().unwrap();
+        let destination = library_dir.join(file_name);
+        
+        match fs::copy(&path, &destination) { // Copy first to be safe
+            Ok(_) => {
+                final_path = destination;
+                app.log(format!("[INFO] Copied mod to library: {:?}", final_path));
+            },
+            Err(e) => {
+                app.log(format!("[ERROR] Failed to move mod: {}", e));
+                return;
+            }
+        }
+    }
+
+    if app.storage.catalog.mods.iter().any(|m| m.zip_path == final_path) {
         app.log("[WARN] Mod already in library.".to_string());
         return;
     }
 
-    let metadata = ModMetadata::from_zip_or_sidecar(&path);
+    let metadata = ModMetadata::from_zip_or_sidecar(&final_path);
     let order = app.storage.catalog.next_load_order();
     app.storage.catalog.mods.push(ModEntry {
         id: Uuid::new_v4(),
-        zip_path: path.clone(),
+        zip_path: final_path,
         metadata: metadata.clone(),
         enabled: true,
         load_order: order,
