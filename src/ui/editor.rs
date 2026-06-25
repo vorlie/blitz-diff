@@ -33,8 +33,6 @@ fn list_staging_files(root: &Path) -> Vec<PathBuf> {
 }
 
 pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
-    // Don’t borrow `app.editor_state` for the full duration of the egui closure,
-    // otherwise we can’t also mutably use `app` inside the closure.
     if app.editor_state.is_none() {
         ui.separator();
         ui.label(egui::RichText::new("Manual Mod Editor").strong().weak());
@@ -46,7 +44,6 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
     egui::Frame::group(ui.style())
         .inner_margin(10.0)
         .show(ui, |ui| {
-            // Cheap snapshots for labels/listing (no long-lived borrows).
             let (zip_path_snapshot, staging_root, staging_files, manifest_snapshot) = {
                 let state_ref = app.editor_state.as_ref().expect("editor_state is Some");
                 let root = state_ref.staging_dir.path().to_path_buf();
@@ -124,8 +121,6 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
 
             ui.horizontal(|ui| {
                 if ui.button("💾 Save & Repack").clicked() {
-                    // Take the editor state to avoid holding a mutable borrow
-                    // across the egui closure.
                     let maybe_state = app.editor_state.take();
                     if let Some(mut state) = maybe_state {
                         let result = save_and_repack(&mut state);
@@ -137,7 +132,6 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
                                     file_stem_name(&zip_path_snapshot)
                                 ));
 
-                                // Update catalog entry metadata if we can find it.
                                 let new_manifest = state.manifest.clone();
                                 let target_zip = state.zip_path.clone();
 
@@ -153,7 +147,6 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
                                 }
                             }
                             Err(e) => {
-                                // Put the state back so user can retry.
                                 app.editor_state = Some(state);
                                 app.log(format!("[ALERT] Repack failed: {e}"));
                             }
@@ -167,14 +160,11 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
                 }
             });
 
-            let _ = manifest_snapshot; // silence “unused snapshot” if any
+            let _ = manifest_snapshot;
         });
 
-    // Note: move/rename/add controls will be implemented in later Phase 2 sub-steps.
-    // We already support metadata edits + staging view + Save & Repack.
 }
 
-/// Helpers for the upcoming UI integration from the Library tab.
 #[allow(dead_code)]
 pub fn try_open_editor_for_zip(app: &mut ModManagerApp, zip_path: PathBuf) {
     match open_for_editing(&zip_path) {

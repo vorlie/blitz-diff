@@ -57,7 +57,7 @@ pub fn deploy_mod(
     log_fn: &mut Vec<String>,
 ) -> Result<usize, String> {
     if is_game_running() {
-        log_fn.push("[WARN] WorldOfTanksBlitz.exe is running. Close the game before deploying mods.".to_string());
+        log_fn.push("[WARN] wotblitz.exe is running. Close the game before deploying mods.".to_string());
     }
 
     log_fn.push(format!(

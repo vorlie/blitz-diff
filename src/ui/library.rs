@@ -115,8 +115,6 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
             }
         });
 
-    // Handle editor opening *after* the UI closure so we can mutably borrow `app`
-    // without conflicting with the earlier immutable borrow from iterating the mods list.
     if let Some(zip_path) = editor_open_req.take() {
         match open_for_editing(&zip_path) {
             Ok(state) => app.editor_state = Some(state),
@@ -196,7 +194,7 @@ pub fn add_zip_path(app: &mut ModManagerApp, path: PathBuf) {
         let file_name = path.file_name().unwrap();
         let destination = library_dir.join(file_name);
         
-        match fs::copy(&path, &destination) { // Copy first to be safe
+        match fs::copy(&path, &destination) {
             Ok(_) => {
                 final_path = destination;
                 app.log(format!("[INFO] Copied mod to library: {:?}", final_path));
