@@ -457,7 +457,7 @@ checksum = "b4388bee8683e3d04af747c73422af53102d2bd24d9eadb6cbc100baef4b43f8"
 
 [[package]]
 name = "blitz-diff"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "chrono",
  "confy",
@@ -468,7 +468,9 @@ dependencies = [
  "serde_json",
  "sha2 0.10.9",
  "sysinfo",
+ "tempfile",
  "uuid",
+ "walkdir",
  "winreg",
  "zip",
 ]

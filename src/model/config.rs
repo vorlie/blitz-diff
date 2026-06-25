@@ -14,7 +14,7 @@ impl Default for AppConfig {
             vanilla_data_path: r"C:\Games\World_of_Tanks_Blitz\Data".to_string(),
             steam_data_path: r"C:\Program Files (x86)\Steam\steamapps\common\World of Tanks Blitz\Data"
                 .to_string(),
-            mods_library_path: "mods".to_string(),
+            mods_library_path: "./mods".to_string(),
             active_profile: String::new(),
         }
     }

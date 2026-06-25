@@ -8,6 +8,6 @@ pub fn is_game_running() -> bool {
     system.processes().values().any(|p| {
         p.name()
             .to_string_lossy()
-            .eq_ignore_ascii_case("WorldOfTanksBlitz.exe")
+            .eq_ignore_ascii_case("wotblitz.exe")
     })
 }

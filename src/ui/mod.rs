@@ -4,3 +4,5 @@ pub mod library;
 pub mod operations;
 pub mod profiles;
 pub mod settings;
+pub mod editor;
+

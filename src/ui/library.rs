@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::app::ModManagerApp;
 use crate::manager::deploy::mod_id_for_entry;
+use crate::manager::editor::open_for_editing;
 use crate::manager::revert_mod;
 use crate::model::{ModEntry, ModMetadata};
 use crate::storage::persist;
@@ -43,6 +44,8 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
     let mut toggle: Option<(Uuid, bool)> = None;
     let mut disable_revert: Option<(Uuid, bool)> = None;
 
+    let mut editor_open_req: Option<PathBuf> = None;
+
     egui::ScrollArea::vertical()
         .max_height(380.0)
         .show(ui, |ui| {
@@ -58,6 +61,10 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
                                 if !enabled {
                                     disable_revert = Some((id, true));
                                 }
+                            }
+
+                            if ui.small_button("Edit").clicked() {
+                                editor_open_req = Some(entry.zip_path.clone());
                             }
 
                             ui.vertical(|ui| {
@@ -108,11 +115,19 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
             }
         });
 
+    // Handle editor opening *after* the UI closure so we can mutably borrow `app`
+    // without conflicting with the earlier immutable borrow from iterating the mods list.
+    if let Some(zip_path) = editor_open_req.take() {
+        match open_for_editing(&zip_path) {
+            Ok(state) => app.editor_state = Some(state),
+            Err(e) => app.log(format!("[ALERT] Failed to open editor: {e}")),
+        }
+    }
+
     if let Some((id, enabled)) = toggle {
         if let Some(entry) = app.storage.catalog.get_mut(id) {
             entry.enabled = enabled;
         }
-        persist::save_catalog(&app.storage.catalog);
     }
 
     if let Some((id, true)) = disable_revert {
@@ -122,6 +137,7 @@ pub fn show(ui: &mut egui::Ui, app: &mut ModManagerApp) {
     if let Some((id, dir)) = reorder {
         reorder_mod(app, id, dir);
     }
+
 
     if let Some(id) = to_remove {
         app.storage.catalog.remove(id);

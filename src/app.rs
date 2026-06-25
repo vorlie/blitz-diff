@@ -5,7 +5,10 @@ use eframe::egui;
 use crate::manager::DeployPreviewEntry;
 use crate::model::ClientId;
 use crate::storage::persist::{self, AppStorage};
-use crate::ui::{backups, common, library, operations, profiles, settings};
+use crate::ui::{backups, common, editor, library, operations, profiles, settings};
+
+
+use crate::manager::ModEditorState;
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum ActiveTab {
@@ -30,6 +33,7 @@ pub struct ModManagerApp {
     pub vanilla_empty: bool,
     pub steam_empty: bool,
     pub at_least_one_client: bool,
+    pub editor_state: Option<ModEditorState>,
 }
 
 impl ModManagerApp {
@@ -87,6 +91,7 @@ impl Default for ModManagerApp {
             vanilla_empty: false,
             steam_empty: false,
             at_least_one_client: false,
+            editor_state: None,
         };
 
         if let Some(note) = app.storage.migration_note.clone() {
@@ -148,7 +153,7 @@ impl ModManagerApp {
                 ui.horizontal(|ui| {
                     ui.heading("📦 Blitz Diff");
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(egui::RichText::new("v0.2.1").weak().small());
+                        ui.label(egui::RichText::new("v0.3.0").weak().small());
                     });
                 });
             });
@@ -193,6 +198,9 @@ impl ModManagerApp {
                     ActiveTab::Profiles => profiles::show(ui, self),
                     ActiveTab::Settings => settings::show(ui, self),
                 }
+
+                editor::show(ui, self);
+
 
                 ui.add_space(12.0);
                 if !self.status_summary.is_empty() {
